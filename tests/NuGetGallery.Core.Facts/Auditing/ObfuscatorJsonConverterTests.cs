@@ -10,7 +10,6 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using NuGetGallery.Auditing.Obfuscation;
-using System.Collections.Generic;
 
 namespace NuGetGallery.Auditing
 {
