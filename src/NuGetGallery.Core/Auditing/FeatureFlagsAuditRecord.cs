@@ -27,16 +27,22 @@ namespace NuGetGallery.Auditing
                 throw new ArgumentNullException(nameof(flags));
             }
 
+            ContentId = contentId ?? throw new ArgumentNullException(nameof(contentId));
+
             Features = AuditedFeatureFlagFeature.CreateFrom(flags);
             Flights = AuditedFeatureFlagFlight.CreateFrom(flags);
-
-            ContentId = contentId ?? throw new ArgumentNullException(nameof(contentId));
+            
             Result = result;
+
+            // Group feature flags changes by the month they occurred in.
+            var currentTime = DateTime.UtcNow;
+            _path = $"{currentTime.Year}-{currentTime.Month}";
         }
 
+        private readonly string _path;
         public override string GetPath()
         {
-            return ContentId;
+            return _path;
         }
     }
 }

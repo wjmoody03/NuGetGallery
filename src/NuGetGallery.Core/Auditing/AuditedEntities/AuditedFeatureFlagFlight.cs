@@ -1,8 +1,10 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System.Collections.Generic;
 using System.Linq;
 using NuGet.Services.FeatureFlags;
+using NuGetGallery.Auditing.Obfuscation;
 
 namespace NuGetGallery.Auditing.AuditedEntities
 {
@@ -11,14 +13,16 @@ namespace NuGetGallery.Auditing.AuditedEntities
         public string Name { get; private set; }
         public bool All { get; private set; }
         public bool SiteAdmins { get; private set; }
-        public int AccountsCount { get; private set; }
-        public int DomainsCount { get; private set; }
+        [Obfuscate(ObfuscationType.UserNameList)]
+        public string[] Accounts { get; private set; }
+        [Obfuscate(ObfuscationType.UserNameList)]
+        public string[] Domains { get; private set; }
 
         public static AuditedFeatureFlagFlight[] CreateFrom(FeatureFlags flags)
         {
-            return flags.Flights
+            return flags.Flights?
                 .Select(f => CreateFrom(f.Key, f.Value))
-                .ToArray();
+                .ToArray() ?? new AuditedFeatureFlagFlight[0];
         }
 
         public static AuditedFeatureFlagFlight CreateFrom(string name, Flight flight)
@@ -28,8 +32,8 @@ namespace NuGetGallery.Auditing.AuditedEntities
                 Name = name,
                 All = flight.All,
                 SiteAdmins = flight.SiteAdmins,
-                AccountsCount = flight.Accounts?.Count() ?? 0,
-                DomainsCount = flight.Domains?.Count() ?? 0
+                Accounts = flight.Accounts?.ToArray() ?? new string[0],
+                Domains = flight.Domains?.ToArray() ?? new string[0]
             };
         }
     }

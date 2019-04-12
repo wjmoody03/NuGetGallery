@@ -13,10 +13,11 @@ namespace NuGetGallery.Auditing.AuditedEntities
 
         public static AuditedFeatureFlagFeature[] CreateFrom(FeatureFlags flags)
         {
-            return flags.Features
+            return flags.Features?
                 .Select(f => CreateFrom(f.Key, f.Value))
-                .ToArray();
+                .ToArray() ?? new AuditedFeatureFlagFeature[0];
         }
+
         public static AuditedFeatureFlagFeature CreateFrom(string name, FeatureStatus status)
         {
             return new AuditedFeatureFlagFeature

@@ -2,6 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -27,7 +29,8 @@ namespace NuGetGallery.Auditing.Obfuscation
         public override bool CanConvert(Type objectType)
         {
             return objectType == typeof(string) ||
-                   objectType == typeof(int?);
+                   objectType == typeof(int?) ||
+                   objectType == typeof(string[]);
         }
 
         /// <summary>
@@ -41,10 +44,30 @@ namespace NuGetGallery.Auditing.Obfuscation
             var currentInstance = Instance;
             foreach (var part in path.Split('.'))
             {
-                property = currentInstance.GetType().GetProperty(part);
-                if (property == null) { return null; }
+                var propertyName = part;
+                var firstBracket = part.IndexOf('[');
+                if (firstBracket >= 0)
+                {
+                    propertyName = part.Substring(0, firstBracket);
+                }
+
+                property = currentInstance.GetType().GetProperty(propertyName);
+                
+                if (property == null)
+                {
+                    return null;
+                }
+
                 currentInstance = property.GetValue(currentInstance);
+
+                if (firstBracket >= 0)
+                {
+                    var secondBracket = part.IndexOf(']');
+                    var index = int.Parse(part.Substring(firstBracket + 1, secondBracket - firstBracket - 1));
+                    currentInstance = (currentInstance as IEnumerable<object>).ElementAt(index);
+                }
             }
+
             return property;
         }
 
@@ -71,7 +94,7 @@ namespace NuGetGallery.Auditing.Obfuscation
         /// <param name="value">The value to be obfuscated.</param>
         /// <param name="obfuscationType">The type of obfuscation.</param>
         /// <returns>The obfuscated value.</returns>
-        private string Obfuscate(object value, ObfuscationType obfuscationType)
+        private object Obfuscate(object value, ObfuscationType obfuscationType)
         {
             switch(obfuscationType)
             {
@@ -83,6 +106,8 @@ namespace NuGetGallery.Auditing.Obfuscation
                     return "-1";
                 case ObfuscationType.IP:
                     return Obfuscator.ObfuscateIp(value.ToString());
+                case ObfuscationType.UserNameList:
+                    return new[] { Obfuscator.ObfuscatedUserName };
                 default:
                     throw new ArgumentException(nameof(obfuscationType));
             }

@@ -8,6 +8,7 @@ namespace NuGetGallery.Auditing.Obfuscation
         UserKey,
         UserName,
         Authors,
-        IP
+        IP,
+        UserNameList
     }
 }
