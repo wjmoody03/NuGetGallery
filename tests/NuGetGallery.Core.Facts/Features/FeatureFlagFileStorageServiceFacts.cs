@@ -167,8 +167,8 @@ namespace NuGetGallery.Features
                                     f => f.Name == "NuGetGallery.TyposquattingFlight"
                                         && f.All
                                         && f.SiteAdmins
-                                        && f.AccountsCount == 1
-                                        && f.DomainsCount == 1) != null)),
+                                        && f.Accounts.Single() == "a"
+                                        && f.Domains.Single() == "b") != null)),
                     Times.Once());
             }
 
@@ -219,8 +219,8 @@ namespace NuGetGallery.Features
                                     f => f.Name == "NuGetGallery.TyposquattingFlight"
                                         && f.All
                                         && f.SiteAdmins
-                                        && f.AccountsCount == 1
-                                        && f.DomainsCount == 1) != null)),
+                                        && f.Accounts.Single() == "a"
+                                        && f.Domains.Single() == "b") != null)),
                     Times.Once());
             }
 
@@ -265,8 +265,8 @@ namespace NuGetGallery.Features
                                     f => f.Name == "NuGetGallery.TyposquattingFlight"
                                         && f.All
                                         && f.SiteAdmins
-                                        && f.AccountsCount == 1
-                                        && f.DomainsCount == 1) != null)),
+                                        && f.Accounts.Single() == "a"
+                                        && f.Domains.Single() == "b") != null)),
                     Times.Once());
             }
         }
@@ -392,20 +392,20 @@ namespace NuGetGallery.Features
                                     f => f.Name == "A"
                                         && !f.All
                                         && !f.SiteAdmins
-                                        && f.AccountsCount == 1
-                                        && f.DomainsCount == 0) != null
+                                        && f.Accounts.Single() == "user2"
+                                        && !f.Domains.Any()) != null
                                 && r.Flights.SingleOrDefault(
                                     f => f.Name == "B"
                                         && !f.All
                                         && !f.SiteAdmins
-                                        && f.AccountsCount == 0
-                                        && f.DomainsCount == 0) != null
+                                        && !f.Accounts.Any()
+                                        && !f.Domains.Any()) != null
                                 && r.Flights.SingleOrDefault(
                                     f => f.Name == "C"
                                         && !f.All
                                         && !f.SiteAdmins
-                                        && f.AccountsCount == 1
-                                        && f.DomainsCount == 0) != null)),
+                                        && f.Accounts.Single() == "user2"
+                                        && !f.Domains.Any()) != null)),
                     Times.Once());
             }
 
@@ -472,8 +472,8 @@ namespace NuGetGallery.Features
                                     f => f.Name == "A"
                                         && !f.All
                                         && !f.SiteAdmins
-                                        && f.AccountsCount == 1
-                                        && f.DomainsCount == 0) != null)),
+                                        && f.Accounts.Single() == "user2"
+                                        && !f.Domains.Any()) != null)),
                     Times.Once());
 
                 _auditing.Verify(
@@ -487,8 +487,8 @@ namespace NuGetGallery.Features
                                     f => f.Name == "A"
                                         && !f.All
                                         && !f.SiteAdmins
-                                        && f.AccountsCount == 1
-                                        && f.DomainsCount == 0) != null)),
+                                        && f.Accounts.Single() == "user2"
+                                        && !f.Domains.Any()) != null)),
                     Times.Once());
             }
 
@@ -537,8 +537,8 @@ namespace NuGetGallery.Features
                                     f => f.Name == "A" 
                                         && !f.All
                                         && !f.SiteAdmins
-                                        && f.AccountsCount == 1 
-                                        && f.DomainsCount == 0) != null)),
+                                        && f.Accounts.Single() == "user2" 
+                                        && !f.Domains.Any()) != null)),
                     Times.Exactly(3));
             }
 
